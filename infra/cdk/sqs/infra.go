@@ -18,8 +18,8 @@ func CreateFunction(stack constructs.Construct, name string, path string) awslam
 	})
 	// todo: add queueArn as parameter
 
-	queueArn := "arn:aws:sqs:us-east-1:776658659836:testCdk"
-	nameQueue := "testCdk"
+	queueArn := "arn:aws:sqs:us-east-1:776658659836:QueeCdk"
+	nameQueue := "QueueCdk"
 	queue := awssqs.Queue_FromQueueArn(stack, jsii.String(nameQueue), jsii.String(queueArn))
 	sqsFunction.AddEventSource(awslambdaeventsources.NewSqsEventSource(queue, &awslambdaeventsources.SqsEventSourceProps{}))
 	queue.GrantConsumeMessages(sqsFunction)
