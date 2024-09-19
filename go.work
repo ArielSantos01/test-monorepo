@@ -1,0 +1,12 @@
+go 1.22
+
+use (
+	.
+	./infra/cdk/build
+	./infra/cdk/cron
+	./infra/cdk/lhttp
+	./infra/cdk/sqs
+	./pkg/cdk
+	./services/kyc/cdk
+	./services/turbo/tickets/cdk
+)

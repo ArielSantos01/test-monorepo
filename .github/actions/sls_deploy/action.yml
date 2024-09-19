@@ -1,0 +1,20 @@
+name: 'Deploy Action'
+description: 'Configure and deploy the Serverless'
+
+inputs:
+  service-name:
+    description: 'Nombre del servicio'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install SLS dependencies
+      working-directory: ${{ inputs.service-name }}
+      run: npm install
+      shell: bash
+
+    - name: SLS Deploy
+      working-directory: ${{ inputs.service-name }}
+      run: npm run deploy
+      shell: bash

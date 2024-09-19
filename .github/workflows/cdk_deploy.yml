@@ -1,0 +1,30 @@
+name: CDK Deploy
+
+on:
+  workflow_call:
+    inputs:
+        service-name:
+            type: string
+            description: 'Service name'
+            required: true
+
+jobs:
+  cdk-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Installing AWS CDK CLI
+        run: |
+          npm install -g aws-cdk
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: CDK Deploy
+        working-directory: ${{ inputs.service-name }}
+        run: cdk deploy --all --require-approval never
+
+

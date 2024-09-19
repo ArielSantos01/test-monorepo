@@ -1,0 +1,89 @@
+name: Dev deploy
+
+on:
+  push:
+    branches:
+      - "main"
+      - "feat/test-deploy"
+
+permissions:
+  contents: read
+  packages: read
+
+env:
+  STAGE: dev
+  AWS_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+
+jobs:
+  service_list:
+    name: Service List
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.folders.outputs.folders }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: List folders
+        id: folders
+        uses: docker://ghcr.io/drafteame/list-folders-action:v0.1.0
+        with:
+          paths: "services,services/turbo"
+          separator: ','
+          omit: "turbo, games"
+
+
+  setup_deploy:
+    name: Service Dev deploy
+    if: "!startsWith(github.event.head_commit.message, 'bump') && !startsWith(github.event.head_commit.message, 'ci')"
+    runs-on: ubuntu-latest
+    needs:
+      - service_list
+    strategy:
+      matrix:
+        service: ${{ fromJSON(needs.service_list.outputs.services) }}
+    steps:
+      - name: 🛎 Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Langs
+        uses: Drafteame/setup-ci-langs@v0.8.0
+        with:
+          node: 'true'
+          node-cache-key-suffix: dev
+          node-working-directory: ${{ matrix.service }}
+
+      - name: Install GO dependencies
+        run: go mod download
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Set Service Name
+        id: service_name
+        run: |
+          service_name=$(echo ${{ matrix.service }} | sed -E 's|cmd(/([^/]+))?/([^/]+)|\2-\3|' | sed 's|^-\(.*\)|\1|')
+          echo "SERVICE_NAME=$service_name" >> $GITHUB_ENV
+          echo "Service Name: $service_name"
+
+      - name: Set deploy type
+        id: set-deploy-type
+        run: |
+          deploy_type=$(jq -r '.["deploy-type"]' ${{ matrix.service }}/deployment.json)
+          echo "DEPLOY_TYPE=$deploy_type" >> $GITHUB_ENV
+
+      - name: Deploy with CDK
+        if: "env.DEPLOY_TYPE == 'cdk'"
+        uses: ./.github/actions/cdk_deploy
+        with:
+          service-name: ${{ matrix.service }}
+
+      - name: Deploy with Serverless
+        if: "env.DEPLOY_TYPE == 'serverless'"
+        uses: ./.github/actions/sls_deploy
+        with:
+          service-name: ${{ matrix.service }}
+

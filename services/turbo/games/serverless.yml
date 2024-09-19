@@ -1,0 +1,29 @@
+service: games-service
+
+provider:
+  name: aws
+  architecture: arm64
+  runtime: provided.al2
+  region: us-east-1
+  stage: dev
+
+custom:
+  go:
+    cmd: 'go build -ldflags="-s -w" -tags lambda.norpc'
+
+functions:
+  hello:
+    handler: ./cmd/lambda-a/main.go
+    events:
+      - http:
+          path: /hello
+          method: GET
+  world:
+    handler: ./cmd/lambda-b/main.go
+    events:
+      - http:
+          path: /world
+          method: GET
+
+plugins:
+  - serverless-plugin-go

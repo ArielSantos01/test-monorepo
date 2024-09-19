@@ -1,0 +1,19 @@
+name: 'Deploy Action'
+description: 'Configure and deploy the CDK stack'
+
+inputs:
+  service-name:
+    description: 'Service name'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Installing AWS CDK CLI
+      shell: bash
+      run: npm install -g aws-cdk
+
+    - name: CDK Deploy
+      shell: bash
+      working-directory: ${{ inputs.service-name }}
+      run: cd cdk && cdk deploy -v -y --require-approval never

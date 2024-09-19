@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "serverless": "^3.38.0",
+    "serverless-plugin-go": "^0.0.3"
+  },
+  "scripts": {
+    "deploy": "./node_modules/.bin/sls deploy --verbose"
+  }
+}
