@@ -18,9 +18,9 @@ func loadPklConfig() (map[string]any, error) {
 	}
 	servicePath := filepath.Join(workdir, "..")
 
-	isLocal := true
-	if os.Getenv("LOCAL") == "" {
-		isLocal = false
+	isLocal := false
+	if os.Getenv("LOCAL") == "true" {
+		isLocal = true
 	}
 	return pkl.Pkl(servicePath, isLocal)
 
