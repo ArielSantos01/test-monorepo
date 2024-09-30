@@ -1,0 +1,17 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "route": "/"
+    },
+    {
+      "method": "GET",
+      "route": "/{proxy+}"
+    },
+    {
+      "method": "POST",
+      "route": "/{proxy+}"
+    }
+  ],
+  "apiId": "{{pkl:TURBO_TICKETS_API_GATEWAY_ID}}"
+}

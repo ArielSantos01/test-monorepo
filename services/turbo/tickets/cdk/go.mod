@@ -2,10 +2,14 @@ module cdk-tickets
 
 go 1.22
 
-replace stackcdk => ./../../../../pkg/cdk/stackcdk
+replace (
+	stackcdk => ./../../../../pkg/cdk/stackcdk
+	pkl => ./../../../../../infra/cdk/pkl
+
+)
 
 require (
-	github.com/aws/aws-cdk-go/awscdk/v2 v2.159.0
+	github.com/aws/aws-cdk-go/awscdk/v2 v2.159.1
 	github.com/aws/jsii-runtime-go v1.103.1
 )
 

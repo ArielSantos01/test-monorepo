@@ -3,6 +3,7 @@ module stackcdk
 go 1.22
 
 replace (
+	apigateway => ./../../infra/cdk/apigateway
 	build => ./../../infra/cdk/build
 	cdkcron => ./../../infra/cdk/cron
 	cdklhttp => ./../../infra/cdk/lhttp
@@ -10,7 +11,7 @@ replace (
 )
 
 require (
-	github.com/aws/aws-cdk-go/awscdk/v2 v2.159.0
+	github.com/aws/aws-cdk-go/awscdk/v2 v2.159.1
 	github.com/aws/constructs-go/constructs/v10 v10.3.0
 )
 

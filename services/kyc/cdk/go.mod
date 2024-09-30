@@ -9,7 +9,7 @@ replace (
 )
 
 require (
-	github.com/aws/aws-cdk-go/awscdk/v2 v2.159.0
+	github.com/aws/aws-cdk-go/awscdk/v2 v2.159.1
 	github.com/aws/jsii-runtime-go v1.103.1
 )
 

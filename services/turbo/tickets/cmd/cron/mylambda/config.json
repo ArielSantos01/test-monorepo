@@ -1,0 +1,9 @@
+{
+  "cron": {
+    "minute":     "1",
+    "hour":       "*",
+    "day":        "*",
+    "month":      "*"
+  },
+  "expression": ""
+}

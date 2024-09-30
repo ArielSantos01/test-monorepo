@@ -1,6 +1,7 @@
 package stackcdk
 
 import (
+	"apigateway"
 	"build"
 	"cdkcron"
 	"cdklhttp"
@@ -33,10 +34,17 @@ func processPath() error {
 	return nil
 }
 
-func NewCdkStack(scope constructs.Construct, id string, props *CdkStackProps) (awscdk.Stack, error) {
+func NewCdkStack(scope constructs.Construct, id string, props *CdkStackProps, opts ...Option) (awscdk.Stack, error) {
+	functionOpts := options{}
+
+	for _, opt := range opts {
+		opt(&functionOpts)
+	}
+
 	if err := processPath(); err != nil {
 		return nil, err
 	}
+
 	var sprops awscdk.StackProps
 	if props != nil {
 		sprops = props.StackProps
@@ -47,15 +55,48 @@ func NewCdkStack(scope constructs.Construct, id string, props *CdkStackProps) (a
 	if httpMap, exists := pathsMaps["http"]; exists {
 		createLHTTPLambdas(stack, httpMap)
 	}
-	if sqsMap, exists := pathsMaps["sqs"]; exists {
-		createSQSLambdas(stack, sqsMap)
-	}
 
 	if cronMap, exists := pathsMaps["cron"]; exists {
-		createCRONLambdas(stack, cronMap)
+		err := createCRONLambdas(stack, cronMap)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if sqsMap, exists := pathsMaps["sqs"]; exists {
+		err := createSQSLambdas(stack, sqsMap, functionOpts)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if apiHttpMap, exists := pathsMaps["apihttp"]; exists {
+		err := createApiHttpLambdas(stack, apiHttpMap, functionOpts)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return stack, nil
+}
+func createApiHttpLambdas(stack constructs.Construct, apiHttpMap map[string]string, opt options) error {
+	for nameFunc, path := range apiHttpMap {
+		err := apigateway.CreateFunction(stack, nameFunc, path, apigateway.WithPklConfig(opt.pklConfig))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func createSQSLambdas(stack constructs.Construct, sqsMap map[string]string, opt options) error {
+	for nameFunc, path := range sqsMap {
+		err := cdksqs.CreateFunction(stack, nameFunc, path, cdksqs.WithPklConfig(opt.pklConfig))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func createLHTTPLambdas(stack constructs.Construct, httpMap map[string]string) {
@@ -64,16 +105,14 @@ func createLHTTPLambdas(stack constructs.Construct, httpMap map[string]string) {
 	}
 }
 
-func createSQSLambdas(stack constructs.Construct, sqsMap map[string]string) {
-	for nameFunc, path := range sqsMap {
-		cdksqs.CreateFunction(stack, nameFunc, path)
-	}
-}
-
-func createCRONLambdas(stack constructs.Construct, cronMap map[string]string) {
+func createCRONLambdas(stack constructs.Construct, cronMap map[string]string) error {
 	for nameFunc, path := range cronMap {
-		cdkcron.CreateFunction(stack, nameFunc, path)
+		err := cdkcron.CreateFunction(stack, nameFunc, path)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func BuildFunc() error {

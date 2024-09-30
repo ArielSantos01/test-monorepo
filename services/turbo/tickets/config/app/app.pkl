@@ -1,0 +1,7 @@
+module config.app
+
+import "modules.pkl" as modules
+
+output {
+  value = modules.config
+}

@@ -1,0 +1,13 @@
+{
+  "routes": [
+    {
+      "method": "ANY",
+      "route": "/"
+    },
+    {
+      "method": "ANY",
+      "route": "/{proxy+}"
+    }
+  ],
+  "apiId": "2cg81eu49c"
+}

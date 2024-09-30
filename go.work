@@ -2,10 +2,12 @@ go 1.22
 
 use (
 	.
+	./infra/cdk/apigateway
 	./infra/cdk/build
 	./infra/cdk/cron
 	./infra/cdk/lhttp
 	./infra/cdk/sqs
+	./infra/cdk/pkl
 	./pkg/cdk
 	./services/kyc/cdk
 	./services/turbo/tickets/cdk

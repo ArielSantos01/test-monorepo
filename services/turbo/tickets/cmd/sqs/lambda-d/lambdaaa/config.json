@@ -1,0 +1,3 @@
+{
+  "queueArn": "{{pkl:CDK_QUEUE_QUEUE_ARN}}"
+}
