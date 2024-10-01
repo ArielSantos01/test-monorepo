@@ -26,25 +26,27 @@ func Pkl(service string, isLocal bool) (map[string]any, error) {
 	if !Exists(mainFile) {
 		return map[string]any{}, nil
 	}
-	println("Local: ", isLocal)
 
 	println("Building pkl:", service)
 
 	var envVars []string
-	envs, err := getAWSEnvs(isLocal)
+	envs, err := getAWSEnvs(isLocal) // {}
 	if err != nil {
+		println("Error getting AWS envs:")
 		return map[string]any{}, err
 	}
+	println("Error antes de hacer el for")
 	for key, value := range envs {
 		envVars = append(envVars, key+"="+value)
 	}
-
+	println("Antes de ejecutar el comando")
 	cmd := "pkl eval -f json " + mainFile
 	command := exec.Command("bash", "-c", cmd)
 	command.Env = append(os.Environ(), envVars...)
-
+	println(command.Env)
 	var output []byte
 	output, err = command.CombinedOutput()
+	println("Despues de ejecutar el comando")
 	if err != nil {
 		return map[string]any{}, err
 	}
@@ -64,7 +66,7 @@ func Exists(path string) bool {
 }
 
 func getAWSEnvs(isLocal bool) (map[string]string, error) {
-	if !isLocal {
+	if !isLocal { //false -> true
 		return map[string]string{}, nil // si no es local se toman las variables de entorno de la instancia
 	}
 
