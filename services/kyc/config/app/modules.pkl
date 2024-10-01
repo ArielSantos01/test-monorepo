@@ -1,0 +1,272 @@
+module config.modules
+
+import "https://draftea-cdn-prod.s3.us-east-2.amazonaws.com/xb/pkl/not-templates.pkl" as notTemplates
+import "https://draftea-cdn-prod.s3.us-east-2.amazonaws.com/xb/pkl/sqs.pkl" as sqs
+import "https://draftea-cdn-prod.s3.us-east-2.amazonaws.com/xb/pkl/sns.pkl" as sns
+import "https://draftea-cdn-prod.s3.us-east-2.amazonaws.com/xb/pkl/slack.pkl" as slack
+import "https://draftea-cdn-prod.s3.us-east-2.amazonaws.com/xb/pkl/lambda.pkl" as lambda
+import "https://draftea-cdn-prod.s3.us-east-2.amazonaws.com/xb/pkl/generic.pkl" as generic
+import "https://draftea-cdn-prod.s3.us-east-2.amazonaws.com/xb/pkl/classes.pkl" as classes
+
+/// Notification templates
+/// -------------------------------------------------------------------------------
+
+local notificationTemplates: List<classes.ConfEnv> = List(
+  notTemplates.deleteAvatarPush,
+  notTemplates.approvedBaiPush,
+  notTemplates.rejectedBaiPush,
+  notTemplates.cashOutSuccessPush,
+  notTemplates.cashOutCanceledByReviewPush,
+  notTemplates.cashOutCanceledPush,
+  notTemplates.cashInSuccessYunoPush,
+  notTemplates.cashInSuccessArcusPush,
+  notTemplates.cashInRejectedYunoPush,
+  notTemplates.referrerSuccessPush,
+  notTemplates.winningPayoutSuccessTurboPush,
+  notTemplates.winningPayoutSuccessDfsPush,
+  notTemplates.winningPayoutSuccessOsbPush,
+  notTemplates.cancelledContestNotEnoughParticipantsPush,
+  notTemplates.cancelledContestByCancelledGamesPush,
+  notTemplates.cancelledContestByInternalProblemPush,
+  notTemplates.internalAdjustmentProtectedTurboSuccessPush
+)
+
+/// SQS queues
+/// -------------------------------------------------------------------------------
+
+local queues: List<String> = List(
+  // Used on serverless.yml
+  sqs.updateUserHasSuccessPaymentQueue,
+  sqs.updateUserOnPaidLineupQueue,
+  sqs.setLastDraftedAtQueue,
+  sqs.searchAffectedTransactionsByCancelledContestQueue,
+  sqs.processYunoExternalPaymentQueue,
+  sqs.processPendingYunoCashInQueue,
+  sqs.processPendingCashOutQueue,
+  sqs.processInitiatedBankAccountInformationQueue,
+  sqs.processCashOutQueue,
+  sqs.processBlockUserBulkQueue,
+  sqs.processBlockedCashOutQueue,
+  sqs.processArcusPaymentQueue,
+  sqs.processArcusCepQueue,
+  sqs.processArcusAccountTransactionQueue,
+  sqs.notifyUserTransactionLedgerQueue,
+  sqs.notifyUserBankAccountInformationQueue,
+  sqs.notifySlackTransactionLedgerQueue,
+  sqs.notifySegmentTransactionLedgerQueue,
+  sqs.notifySegmentIdentifyBalanceQueue,
+  sqs.notifySegmentDeviceQueue,
+  sqs.notifySegmentBankAccountInformationQueue,
+  sqs.informArcusAccountTransactionQueue,
+  sqs.deleteUserCouponQueue,
+  sqs.createUserCouponQueue,
+  sqs.createReferrerTransactionLedgerQueue,
+  sqs.createBankDepositQueue,
+  sqs.createArcusPaymentQueue,
+  sqs.completeBankDepositQueue,
+  sqs.cancelPendingCashOutQueue,
+  sqs.blockPendingCashOutQueue,
+  sqs.approveBankAccountInformationQueueQueue,
+  sqs.annulBankDepositQueue,
+  sqs.addBalanceQueue,
+  sqs.notifySlackLimitBalanceQueue,
+  sqs.clearBalanceQueue,
+  "CdkQueue",
+  // Used as env vars
+  sqs.retryExternalPaymentQueue,
+  sqs.saveUserFeedbackQueueQueue,
+  sqs.notificationDispatcherQueue,
+  sqs.reverseTransactionQueue,
+  sqs.deleteVirtualBankAccountInformationQueue,
+  sqs.createVirtualBankAccountInformationQueue,
+  sqs.createVirtualBankAccountInformationOnUnblockQueue,
+  sqs.sendNotificationPushQueue, // TODO: REVIEW USE
+  sqs.createPaymentMethodQueue,
+  sqs.notifyUserSegmentQueue,
+  sqs.processPushNotificationsQueue,
+  sqs.userRegisteredFraudQueue,
+  sqs.processBlockUserQueue,
+  sqs.processInReviewUserQueue,
+  sqs.createUserWalletQueue,
+  sqs.updateUserAvatarQueueQueue,
+  sqs.cancelTransactionLedgerQueue, // TODO: REVIEW USE
+  sqs.accountBankInformationCreatedQueueQueue
+)
+
+/// SNS topics
+/// -------------------------------------------------------------------------------
+
+local topics: List<String> = List(
+  sns.externalPaymentsTopic,
+  sns.transactionLedgerTopic,
+  sns.bankAccountInformationTopic,
+  sns.arcusEventsTopic,
+  sns.bankDepositTopic,
+  sns.deviceTopic,
+  sns.balanceTopic,
+  sns.userTopic
+)
+
+/// Slack Webhooks
+/// -------------------------------------------------------------------------------
+
+local slackWebhooks: List<slack.Webhook> = List(
+  slack.arcusNotEnoughBalanceWebhook,
+  slack.maxAttemptsRetryExternalPaymentWebhook,
+  slack.baiInformationCompletedWebhook,
+  slack.arcusAccountTransactionWebhook,
+  slack.approveBaiWebhook,
+  slack.paymentErrorWebhook,
+  slack.adminEndpointWebhook, //TODO: REVIEW USE
+  slack.transactionsAlertsWebhook,
+  slack.informationPendingBankAccountWebhook,
+  slack.testingWebhook
+)
+
+/// Lambdas
+/// -------------------------------------------------------------------------------
+
+local lambdas: List<lambda.Lambda> = List(
+  lambda.approveLineupLambda
+)
+
+/// Generic
+/// -------------------------------------------------------------------------------
+
+local generics: List<classes.ConfEnv> = List(
+  generic.dataFraudRole,
+  generic.minCashInAmount,
+  generic.maxCashInAmount,
+  generic.referralCouponMxnAmount,
+  generic.referrerCouponMxnAmount,
+  generic.maxBeginnerPaidLineups,
+  generic.feedbackSpreadsheetId,
+  generic.turboTicketPaymentProductId,
+  generic.referralCouponMxnMinValidAmount,
+  generic.cdnUrl,
+  generic.cdnBucketName,
+  generic.cdnDistributionId,
+  generic.createViewConfigSecretName,
+  generic.visionCredentialName,
+  generic.emptyPackageId,
+  generic.geoBlockDisabled
+)
+
+/// Service configurations
+/// -------------------------------------------------------------------------------
+
+local serviceConfigs: List<classes.ConfEnv> = List(
+  new classes.ConfEnv {
+    name = "SentryDsn"
+    dev = ""
+    prod = "https://6cd0972d1f634a7488e7fd6c531e88c5@o1097437.ingest.us.sentry.io/6119848"
+  },
+  new classes.ConfEnv {
+    name = "IdempotencyTtl"
+    dev = 169
+    prod = 169
+  },
+  new classes.ConfEnv {
+    name = "TurboWiningPayoutLink"
+    dev = "/myContests?turbo=true&turboStatus=past"
+    prod = "/myContests?turbo=true&turboStatus=past"
+  },
+  new classes.ConfEnv {
+    name = "GetUserRiskEndpoint"
+    dev = "fraud-proneness-2024-02-27-23-00-06"
+    prod = "fraud-proneness-2024-02-27-23-30-36"
+  },
+  new classes.ConfEnv {
+    name = "InternalDrafteaAssessRiskEndpoint"
+    dev = "fraud-proneness-2024-02-27-23-00-06"
+    prod = "fraud-proneness-2024-02-27-23-30-36"
+  },
+  new classes.ConfEnv {
+    name = "FraudEnable"
+    dev = false
+    prod = true
+  },
+  new classes.ConfEnv {
+    name = "FraudDisabled"
+    dev = true
+    prod = false
+  },
+  new classes.ConfEnv {
+    name = "DefaultFtdCouponEnabled"
+    dev = false
+    prod = false
+  },
+  new classes.ConfEnv {
+    name = "S3Role"
+    dev = "arn:aws:iam::199454627835:role/backend_s3_role"
+    prod = "arn:aws:iam::784278486708:role/backend_s3_role"
+  },
+  new classes.ConfEnv {
+    name = "InviteTokenLength"
+    dev = 6
+    prod = 6
+  },
+  new classes.ConfEnv {
+    name = "ReferralDuplicateCouponMxnMaxValidAmount"
+    dev = 200000
+    prod = 200000
+  },
+  new classes.ConfEnv {
+    name = "OsbTicketPaymentProductId"
+    dev = "pyp_CyuvT0CiKEH5PU0yw"
+    prod = "pyp_C9zXt2FjL8M3RQ7v"
+  },
+  new classes.ConfEnv {
+    name = "UserWithoutFingerprintAlertSlackChannel"
+    dev = "testing"
+    prod = "seon-no-fingerprint"
+  },
+  new classes.ConfEnv {
+    name = "UserBalanceReviewSlackChannel"
+    dev = "testing"
+    prod = "user_balance_review"
+  },
+  new classes.ConfEnv {
+    name = "BalanceLimit"
+    dev = "3000000"
+    prod = "3000000"
+  },
+  new classes.ConfEnv {
+    name = "TransactionCashoutLimitAmount"
+    dev = "1000000"
+    prod = "1000000"
+  },
+  new classes.ConfEnv {
+    name = "UsersAmlDocumentationWhitelist"
+    dev = "629e5649b8fdebef8a10433a,640b487883328a130f3ee799,6500990fdc4bbe3dabcdc14c"
+    prod = "628568286baffdbe2d8dbb5c,62433b5c2193cd794896cd1a,632570cf611d31e12e4152aa,647a7adfae48bd50963fea7a,66281c294d958415b98cb716,638ff5400d7d930701867a65,66d9f26a557b2174ac55567e,63cbf666396a387fe394bc90,6435cbcb032dc1a00cb52964,631a7857f45e3db88059c73a,66dd74dcabc4dd516412d691,66c7a47b4d217e9df4897da3,66ad5edeba4937eaa7b99f8d"
+  },
+  new classes.ConfEnv {
+    name = "ElapsedUserBlockedDays"
+    dev = 30
+    prod = 30
+  },
+  new classes.ConfEnv {
+    name = "ConciliationBlockedUsersProductId"
+    dev = "pyp_CyuvT0CiKEH0AA1aa"
+    prod = "pyp_C9zXt2FjL8M3AA1a"
+  },
+  new classes.ConfEnv {
+    name = "TurboTicketsApiGatewayId"
+    dev = "2cg81eu49c"
+    prod = ""
+  }
+)
+
+/// Merge modules config
+/// -------------------------------------------------------------------------------
+
+config {
+  ...sqs.getEnvs(queues)
+  ...sns.getEnvs(topics)
+  ...lambda.getEnvs(lambdas)
+  ...generic.getEnvs(generics)
+  ...slack.getEnvs(slackWebhooks)
+  ...generic.getEnvs(serviceConfigs)
+  ...notTemplates.getEnvs(notificationTemplates)
+}
