@@ -40,7 +40,7 @@ func main() {
 
 	app := awscdk.NewApp(nil)
 
-	_, err := stackcdk.NewCdkStack(app, "turbo-tickets-test-full", &stackcdk.CdkStackProps{
+	_, err := stackcdk.NewCdkStack(app, "kyc-service-test", &stackcdk.CdkStackProps{
 		awscdk.StackProps{
 			Env: env(),
 		},
