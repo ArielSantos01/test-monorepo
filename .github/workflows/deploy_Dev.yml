@@ -55,6 +55,7 @@ jobs:
           node: 'true'
           node-cache-key-suffix: dev
           node-working-directory: ${{ matrix.service }}
+          pkl: 'true'
 
       - name: Install GO dependencies
         run: go mod download
