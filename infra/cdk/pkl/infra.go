@@ -26,6 +26,7 @@ func Pkl(service string, isLocal bool) (map[string]any, error) {
 	if !Exists(mainFile) {
 		return map[string]any{}, nil
 	}
+	println("Local: ", isLocal)
 
 	println("Building pkl:", service)
 
